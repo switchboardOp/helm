@@ -21,6 +21,7 @@ ntnxImageFinal: ntnx/ntnx-csi:v1.0.1
 ntnxImageBeta: ntnx/ntnx-csi:beta2
 
 #parameters
+kubeletRootDir: /var/lib/kubelet
 
 volumeClass: true
 fileClass: false

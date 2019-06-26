@@ -1,5 +1,5 @@
 # Copyright 2018 Nutanix Inc
-# 
+#
 # Configuration to deploy the CSI Nutanix plugin compatible with Kubernetes >=v1.10
 #
 # example usage: kubectl create -f <this_file>
@@ -27,7 +27,7 @@ spec:
           image: {{ .Values.nodeImageFinal }}
           {{- else}}
           image: {{ .Values.nodeImageBeta }}
-          {{- end }} 
+          {{- end }}
           args:
             - "--v=5"
             - "--csi-address=$(ADDRESS)"
@@ -36,7 +36,7 @@ spec:
             - name: ADDRESS
               value: /csi/csi.sock
             - name: DRIVER_REG_SOCK_PATH
-              value: /var/lib/kubelet/plugins/com.nutanix.csi/csi.sock
+              value: {{ .Values.kubeletRootDir }}/plugins/com.nutanix.csi/csi.sock
             - name: KUBE_NODE_NAME
               valueFrom:
                 fieldRef:
@@ -46,7 +46,7 @@ spec:
               mountPath: /csi/
             - name: registration-dir
               mountPath: /registration
-        - name: csi-ntnx-plugin 
+        - name: csi-ntnx-plugin
           securityContext:
             privileged: true
             allowPrivilegeEscalation: true
@@ -54,7 +54,7 @@ spec:
           image: {{ .Values.ntnxImageFinal }}
           {{- else}}
           image: {{ .Values.ntnxImageBeta }}
-          {{- end }} 
+          {{- end }}
           args :
             - "--endpoint=$(CSI_ENDPOINT)"
             - "--nodeid=$(NODE_ID)"
@@ -87,22 +87,22 @@ spec:
         - name: registration-dir
           hostPath:
             {{- if semverCompare ">=1.13.0" .Capabilities.KubeVersion.GitVersion }}
-            path: /var/lib/kubelet/plugins_registry/
+            path: {{ .Values.kubeletRootDir }}/plugins_registry/
             {{- else}}
-            path: /var/lib/kubelet/plugins/
+            path: {{ .Values.kubeletRootDir }}/plugins/
             {{- end }}
             type: Directory
         - name: plugin-dir
           hostPath:
             {{- if semverCompare ">=1.13.0" .Capabilities.KubeVersion.GitVersion }}
-            path: /var/lib/kubelet/plugins/com.nutanix.csi/
+            path: {{ .Values.kubeletRootDir }}/plugins/com.nutanix.csi/
             {{- else}}
-            path: /var/lib/kubelet/plugins/com.nutanix.csi
+            path: {{ .Values.kubeletRootDir }}/plugins/com.nutanix.csi
             {{- end }}
             type: DirectoryOrCreate
         - name: pods-mount-dir
           hostPath:
-            path: /var/lib/kubelet
+            path: {{ .Values.kubeletRootDir }}
             type: Directory
         - name: device-dir
           hostPath:
